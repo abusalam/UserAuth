@@ -10,10 +10,6 @@
 			<a href="<?php echo FN\GetAbsoluteURLFolder(); ?>AppForm.php">Data Entry</a>
 		</li>
 		<li
-			class="<?php echo ($_SERVER['SCRIPT_NAME']==BaseDIR.'Report.php')?'SelMenuitems':'Menuitems';?>">
-			<a href="<?php echo FN\GetAbsoluteURLFolder(); ?>Report.php">Report</a>
-		</li>
-		<li
 			class="<?php echo ($_SERVER['SCRIPT_NAME']==BaseDIR.'activity.php')?'SelMenuitems':'Menuitems';?>">
 			<a href="<?php echo FN\GetAbsoluteURLFolder(); ?>activity.php">Activity Report</a>
 		</li>
