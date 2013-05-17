@@ -6,6 +6,25 @@ FN\HtmlHeader("Change Password");
 FN\IncludeCSS();
 FN\IncludeJS("js/php.js");
 ?>
+<script type="text/javascript">
+	function ChkPwd(Token)
+	{
+			if(document.getElementById('CNewPassWD').value.length > 6 
+							&& /\d/.test(document.getElementById('CNewPassWD').value) 
+							&& /[A-Z]/.test(document.getElementById('CNewPassWD').value) 
+							&& /[-*!@#$%^&+=]/.test(document.getElementById('CNewPassWD').value)) { 
+					document.getElementById('OldPassWD').value=MD5(MD5(document.getElementById('OldPassWD').value)+Token); 
+					document.getElementById('NewPassWD').value=MD5(MD5(document.getElementById('NewPassWD').value)+Token); 
+					document.getElementById('CNewPassWD').value=MD5(document.getElementById('CNewPassWD').value);
+					document.getElementById('frmChgPWD').submit();
+			} else {
+					alert('Your password is very weak!\n\n'
+									+'Password Should be atleast 6 characters long '
+									+'and must contain lowercase and uppercase letters, '
+									+'numbers, and non alpha-numeric characters atleast one each.');
+			}
+	}
+</script>
 </head>
 <body>
 <div class="TopPanel">
@@ -31,8 +50,8 @@ $Data=new FN\DB();
 		}
 		else
 		{
-			$Qry="Update `".MySQL_Pre."Users` set Pass='" . $Data->SqlSafe(FN\GetVal($_POST,'CNewPassWD'))
-			. "' where UserMapID=" . $_SESSION['UserMapID'] . " AND md5(concat(`Pass`,md5('" . FN\GetVal($_POST,'LoginToken') . "')))='"
+			$Qry="Update `".MySQL_Pre."Users` set UserPass='" . $Data->SqlSafe(FN\GetVal($_POST,'CNewPassWD'))
+			. "' where UserMapID=" . $_SESSION['UserMapID'] . " AND md5(concat(`UserPass`,md5('" . FN\GetVal($_POST,'LoginToken') . "')))='"
 			. FN\GetVal($_POST,'OldPassWD') . "'";
 			$rows=$Data->do_ins_query($Qry);
 			if($rows>0)
@@ -59,7 +78,7 @@ switch($action)
 		echo "<h2>Your password changed Successfully!</h2>";
 	break;
 	case 2:
-		echo "<h2>Sorry! Invalid Old Password Access Denied!</h2>";
+		echo "<h2>Sorry! Invalid Old Password!</h2>";
 	break;
 	case 3:
 		echo "<h2>New Passwords do not match.</h2>";
@@ -71,9 +90,6 @@ switch($action)
 if(($action==2) || ($action==-1) || ($action==3))
 {
 ?>
-
-
-
   <form name="frmChgPWD" id="frmChgPWD" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>">
     <label for="OldPassWD">Old Password:</label><br />
     <input type="password" name="OldPassWD" id="OldPassWD" />
@@ -85,7 +101,7 @@ if(($action==2) || ($action==-1) || ($action==3))
     <input type="password" name="CNewPassWD" id="CNewPassWD" />
     <input type="hidden" name="LoginToken" value="<?php echo $_SESSION['Token'];?>" />
     <br />
-    <input type="button" value="Change" onClick="if(document.getElementById('CNewPassWD').value.length > 6 && /\d/.test(document.getElementById('CNewPassWD').value) && /[A-Z]/.test(document.getElementById('CNewPassWD').value) && /[-*!@#$%^&+=]/.test(document.getElementById('CNewPassWD').value)) { document.getElementById('OldPassWD').value=MD5(MD5(document.getElementById('OldPassWD').value)+'<?php echo md5($_SESSION['Token']);?>'); document.getElementById('NewPassWD').value=MD5(MD5(document.getElementById('NewPassWD').value)+'<?php echo md5($_SESSION['Token']);?>'); document.getElementById('CNewPassWD').value=MD5(document.getElementById('CNewPassWD').value);document.getElementById('frmChgPWD').submit();} else alert('Your password is very weak!\n\n\nPassword Should be atleast 6 characters long and must contain lowercase and uppercase letters, numbers, and non alfa-numeric characters atleast one each.');" />
+    <input type="button" value="Change" onClick="ChkPwd('<?php echo md5($_SESSION['Token']);?>');" />
   </form>
       <?php 
 }
